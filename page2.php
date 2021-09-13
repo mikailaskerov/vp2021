@@ -79,6 +79,7 @@ style="background: rgb(2,0,36); background: linear-gradient(90deg, rgba(2,0,36,1
 		echo $pic_html;
 		echo $list_html;
 	?>
+	
 </center>
 </body>
 </html>
