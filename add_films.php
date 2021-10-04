@@ -100,8 +100,4 @@
     </form>
     <span><?php echo $film_store_notice; ?></span>
 </body>
-<<<<<<< HEAD
-</html> 
-=======
-</html> 
->>>>>>> 773e98302073ef9e0e8ed3bf4828af0195cb81eb
+</html>
