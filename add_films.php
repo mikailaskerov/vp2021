@@ -1,7 +1,19 @@
 <?php
-	$author_name = "Mukail Askerov";
+    //alustame sessiooni
+    session_start();
+    //kas on sisselogitud
+    if(!isset($_SESSION["user_id"])){
+        header("Location: page.php");
+    }
+    //väljalogimine
+    if(isset($_GET["logout"])){
+        session_destroy();
+        header("Location: page.php");
+    }
+
 	require_once("../../config.php");
 	require_once("fnc_film.php");
+	require_once("fnc_general.php");
 	
 	$film_store_notice = null;
 	$title_input = null;
@@ -59,17 +71,25 @@
 			}
 		}
 	}
+	
+	 require ("page_header.php");
 ?>
 <!DOCTYPE html>
 <html lang="et">
 <head>
 	<meta charset="utf-8">
-	<title><?php echo $author_name; ?>, veebiprogrammeerimine</title>
+	<title><?php echo $_SESSION["first_name"] ." " .$_SESSION["last_name"]; ?>, veebiprogrammeerimine</title>
 </head>
 <body>
-	<h1><?php echo $author_name; ?>, veebiprogrammeerimine</h1>
+	<h1><?php echo $_SESSION["first_name"] ." " .$_SESSION["last_name"]; ?>, veebiprogrammeerimine</h1>
 	<p>See leht on valminud õppetöö raames ja ei sisalda mingisugust tõsiseltvõetavat sisu!</p>
 	<p>Õppetöö toimus <a href="https://www.tlu.ee/dt">Tallinna Ülikooli Digitehnoloogiate instituudis</a>.</p>
+	<hr>
+    <ul>
+        <li><a href="?logout=1">Logi välja</a></li>
+		<li><a href="home.php">Avaleht</a></li>
+		<li><a href="list_films.php">Filmide nimekirja vaatamine</a> versioon 1</li>
+    </ul>
 	<hr>
     <h2>Eesti filmide lisamine andmebaasi</h2>
     <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
@@ -78,23 +98,23 @@
         <br>
         <label for="year_input">Valmimisaasta</label>
         <input type="number" name="year_input" id="year_input" min="1912" value="<?php echo $year_input; ?>">
-		<?php echo $year_input_error; ?></span>
+		<span><?php echo $year_input_error; ?></span>
         <br>
         <label for="duration_input">Kestus</label>
         <input type="number" name="duration_input" id="duration_input" min="1" value="<?php echo $duration_input; ?>" max="600">
-		<?php echo $duration_input_error; ?></span>
+		<span><?php echo $duration_input_error; ?></span>
         <br>
         <label for="genre_input">Filmi žanr</label>
         <input type="text" name="genre_input" id="genre_input" placeholder="žanr" value="<?php echo $genre_input; ?>">
-		<?php echo $genre_input_error; ?></span>
+		<span><?php echo $genre_input_error; ?></span>
         <br>
         <label for="studio_input">Filmi tootja</label>
         <input type="text" name="studio_input" id="studio_input" placeholder="filmi tootja" value="<?php echo $studio_input; ?>">
-		<?php echo $studio_input_error; ?></span>
+		<span><?php echo $studio_input_error; ?></span>
         <br>
         <label for="director_input">Filmi režissöör</label>
         <input type="text" name="director_input" id="director_input" placeholder="filmi režissöör" value="<?php echo $director_input; ?>">
-		<?php echo $director_input_error; ?></span>
+		<span><?php echo $director_input_error; ?></span>
         <br>
         <input type="submit" name="film_submit" value="Salvesta">
     </form>

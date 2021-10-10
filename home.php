@@ -1,15 +1,18 @@
 <?php
     //alustame sessiooni
     session_start();
+	require ("fnc_user.php");
+	require ("page_header.php");
     //kas on sisselogitud
     if(!isset($_SESSION["user_id"])){
         header("Location: page.php");
     }
-    //valjalogimine
+    //väljalogimine
     if(isset($_GET["logout"])){
         session_destroy();
         header("Location: page.php");
     }
+
 ?>
 <!DOCTYPE html>
 <html lang="et">
@@ -24,7 +27,10 @@
 	<hr>
     <ul>
         <li><a href="?logout=1">Logi välja</a></li>
+		<li><a href="list_films.php">Filmide nimekirja vaatamine</a></li>
+		<li><a href="add_films.php">Filmide lisamine andmebaasi</a></li>
+		<li><a href="user_profile.php">Minu konto</a></li>
     </ul>
-    
+
 </body>
-</html>
+</html> 

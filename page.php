@@ -3,7 +3,6 @@
     session_start();
     require_once("../../config.php");
     require_once("fnc_user.php");
-$author_name = "Mukail Askerov";
 $todays_evaluation = null; //$todays_evaluation = "";
 	$inserted_adjective = null;
 	$adjective_error = null;
@@ -76,10 +75,10 @@ $todays_evaluation = null; //$todays_evaluation = "";
 <html lang="et">
 <head>
 	<meta charset="utf-8">
-	<title><?php echo $author_name; ?>, veebiprogrammeerimine</title>
+	<title>Veebiprogrammeerimine</title>
 </head>
 <body>
-	<h1><?php echo $author_name; ?>, veebiprogrammeerimine</h1>
+	<h1>Veebiprogrammeerimine</h1>
 	<p>See leht on valminud õppetöö raames ja ei sisalda mingisugust tõsiseltvõetavat sisu!</p>
 	<p>Õppetöö toimus <a href="https://www.tlu.ee/dt">Tallinna Ülikooli Digitehnoloogiate instituudis</a>.</p>
 	<hr>
