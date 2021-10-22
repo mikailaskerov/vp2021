@@ -35,8 +35,8 @@
 	<p>Õppetöö toimus <a href="https://www.tlu.ee/dt">Tallinna Ülikooli Digitehnoloogiate instituudis</a>.</p>
 	<hr>
     <ul>
-        <li><a href="?logout=1">Logi välja</a></li>
-		<li><a href="home.php">Avaleht</a></li>
+        <li><a href="home.php">Avaleht</a></li>
+		<li><a href="?logout=1">Logi välja</a></li>
     </ul>
 	<hr>
     <h2>Kasutajaprofiil</h2>

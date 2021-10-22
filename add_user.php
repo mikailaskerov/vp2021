@@ -84,15 +84,13 @@ if($_SERVER["REQUEST_METHOD"] === "POST"){
             }
 
             //valideerime kuupäeva ja paneme selle kokku
-            if(empty($birth_day_error) and empty($birth_month_error) and empty($birth_year_error)){
-                if(checkdate($birth_month, $birth_day, $birth_year)){
-                    //moodustame kuupäeva
-                    $temp_date = new DateTime($birth_year ."-" .$birth_month ."-" .$birth_day);
-                    $birth_date = $temp_date->format("Y-m-d"); 
-                } else {
-                    $birth_date_error = "Valitud kuupäev on vigane!";
-                }
-            }  
+            if(checkdate($birth_month, $birth_day, $birth_year)){
+            //moodustame kuupäeva
+            $temp_date = new DateTime($birth_year ."-" .$birth_month ."-" .$birth_day);
+            $birth_date = $temp_date->format("Y-m-d"); 
+            } else {
+            $birth_date_error = "Valitud kuupäev on vigane!";
+            }
 
             //kasutajatunnus ja parool
             if(isset($_POST["email_input"]) and !empty($_POST["email_input"])){

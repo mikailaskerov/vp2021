@@ -1,44 +1,36 @@
 <?php
 $database = "if21_mukail_as";
+
 function read_all_films(){
-        //var_dump($GLOBALS);
+		//var_dump($GLOBALS);
         //avan andmebaasiühenduse      server, kasutaja, parool, andmebaas
-        $conn = new mysqli($GLOBALS["server_host"], $GLOBALS["server_user_name"], $GLOBALS["server_password"], $GLOBALS["database"]);
-        //määrame vajaliku kodeeringu
-        $conn->set_charset("utf8");
-        $stmt = $conn->prepare("SELECT * FROM film");
+		$conn = new mysqli($GLOBALS["server_host"], $GLOBALS["server_user_name"], $GLOBALS["server_password"], $GLOBALS["database"]);
+		//määrame vajaliku kodeeringu
+		$conn->set_charset("utf8");
+		$stmt=$conn->prepare("SELECT movie.title,movie.production_year,movie.duration,movie.description,genre.genre_name FROM movie JOIN movie_genre ON movie.id=movie_genre.movie_id JOIN genre ON movie_genre.genre_id=genre.id");
         //igaks juhuks, kui on vigu, väljastame need
         echo $conn->error;
         //seome tulemused muutujatega
-        $stmt->bind_result($title_from_db, $year_from_db, $duration_from_db, $genre_from_db, $studio_from_db, $director_from_db);
-        //käsk täita
-        $stmt->execute();
-        //fetch()
-        //<h3>pealkiri</h3>
-        //<ul>
-        //<li>Valmimisaasta: 1997</li>
-        //...
-        //</ul>
-        $films_html = null;
-        //while(tingimus){
-            //mida teha ...
-        //}
-        while($stmt->fetch()){
-            $films_html .= "<h3>" .$title_from_db ."</h3> \n";
-            $films_html .= "<ul> \n";
-            $films_html .= "<li>Valmimisaasta: " .$year_from_db ."</li> \n";
-            $films_html .= "<li>Kestus: " .$duration_from_db ."</li> \n";
-			$films_html .= "<li>Žanr: " .$genre_from_db ."</li> \n";
-            $films_html .= "<li>Tootja: " .$studio_from_db ."</li> \n";
-            $films_html .= "<li>Režissöör: " .$director_from_db ."</li> \n";
-            $films_html .= "</ul> \n";
-        }
-        //sulgeme SQL käsu
-        $stmt->close();
-        //sulgeme andmebaasiühenduse
-        $conn->close();
-        return $films_html;
-    }
+		$stmt->bind_result($title,$year,$duration,$description,$genre);
+		$stmt->execute();
+		$atitle=[];
+		$ayear=[];
+		$aduration=[];
+		$adescription=[];
+		$agenre=[];
+		while($stmt->fetch())
+			{
+				array_push($atitle, $title);
+				array_push($ayear, $year);
+				array_push($aduration, $duration);
+				array_push($adescription, $description);
+				array_push($agenre, $genre);
+			}
+		$stmt->close();
+		$conn->close();
+		$arr=[$atitle, $ayear, $aduration, $adescription, $agenre];
+		return $arr;
+	}
 
     function store_film($title_input, $year_input, $duration_input, $genre_input, $studio_input, $director_input){
         $conn = new mysqli($GLOBALS["server_host"], $GLOBALS["server_user_name"], $GLOBALS["server_password"], $GLOBALS["database"]);
@@ -58,4 +50,17 @@ function read_all_films(){
         return $success;
     }
 ;
+function to_hours($time)
+{
+	$hours = $time/60;
+	$min = null;
+	if($hours<1){
+		$total=$time.'min';
+	}else{
+		$hours = floor (($time-$min)/60);
+		$min = $time%60;
+		$total = $hours ." h " .$min ." min ";
+	}
+	return $total;
+}
 	?>
