@@ -31,6 +31,8 @@
 		<li><a href="add_films.php">Filmide lisamine andmebaasi</a></li>
 		<li><a href="add_info.php">Info lisamine andmebaasi</a></li>
 		<li><a href="movie_relations.php">Filmi info sidumine</a></li>
+		<li><a href="list_movie_info.php">Filmi info tabel</a></li>
+		<li><a href="gallery_photo_upload.php">Fotode uleslaadimine</a></li>
 		<li><a href="user_profile.php">Minu konto</a></li>
 		<li><a href="?logout=1">Logi välja</a></li>
     </ul>
