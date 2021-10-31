@@ -33,92 +33,71 @@
 	$watermark_file = "pics/vp_logo_w100_overlay.png";
     
     if(isset($_POST["photo_submit"])){
-        if(isset($_FILES["photo_input"]["tmp_name"]) and !empty($_FILES["photo_input"]["tmp_name"])){
-            //kas on pilt ja mis tüüpi?
-            $image_check = getimagesize($_FILES["photo_input"]["tmp_name"]);
-            if($image_check !== false){
-                if($image_check["mime"] == "image/jpeg"){
-                    $file_type = "jpg";
-                }
-                if($image_check["mime"] == "image/png"){
-                    $file_type = "png";
-                }
-                if($image_check["mime"] == "image/gif"){
-                    $file_type = "gif";
-                }
-            } else {
-                $photo_error = "Valitud fail ei ole pilt!";
-            }
-            
+		if(isset($_FILES["photo_input"]["tmp_name"]) and !empty($_FILES["photo_input"]["tmp_name"])){
+			//kas on pilt ja mis tüüpi?
+			$image_check = getimagesize($_FILES["photo_input"]["tmp_name"]);
+			if($image_check !== false){
+				if($image_check["mime"] == "image/jpeg"){
+					$file_type = "jpg";
+				}
+				if($image_check["mime"] == "image/png"){
+					$file_type = "png";
+				}
+				if($image_check["mime"] == "image/gif"){
+					$file_type = "gif";
+				}
+			} else {
+				$photo_error = "Valitud fail ei ole pilt!";
+			}
+			
             //Kas on lubatud suurusega?
-            if(empty($photo_error) and $_FILES["photo_input"]["size"] > $photo_upload_size_limit){
-                $photo_error .= "Valitud fail on liiga suur!";
+			if(empty($photo_error) and $_FILES["photo_input"]["size"] > $photo_upload_size_limit){
+				$photo_error .= "Valitud fail on liiga suur!";
+			}
+
+			//kas alt tekst on 
+			if(isset($_POST["alt_input"]) and !empty($_POST["alt_input"])){
+				$alt_text = test_input(filter_var($_POST["alt_input"], FILTER_SANITIZE_STRING));
+			}else {
+				$photo_error .= "Alternatiivtekst on lisamata!";
             }
-            
-            //kas alt tekst on
-            if(isset($_POST["alt_input"]) and !empty($_POST["alt_input"])){
-                $alt_text = test_input(filter_var($_POST["alt_input"], FILTER_SANITIZE_STRING));
-                if(empty($alt_text)){
-                    $photo_error .= "Alternatiivtekst on lisamata!";
-                }
-            }
-            
-            if(empty($photo_error)){
-                //teen ajatempli
-                $time_stamp = microtime(1) * 10000;
-                
-                //moodustan failinime, kasutame eesliidet
-                $file_name = $photo_filename_prefix ."_" .$time_stamp ."." .$file_type;
-				
-				if ($file_type == "jpg") {
-				$my_temp_image = imagecreatefromjpeg ($_FILES["photo_input"]["tmp_name"]);
-				}
-				if ($file_type == "png") {
-				$my_temp_image = imagecreatefrompng ($_FILES["photo_input"]["tmp_name"]);
-				}
-				if ($file_type == "gif") {
-				$my_temp_image = imagecreatefromgif ($_FILES["photo_input"]["tmp_name"]);
-				}
-				$image_width = imagesx ($my_temp_image);
-				$image_height = imagesy ($my_temp_image);
-				if ($image_width / $normal_photo_max_width > $image_height / $normal_photo_max_height) {
-					$photo_size_ratio = $image_width / $normal_photo_max_width;
-				} else {
-					$photo_size_ratio = $image_height / $normal_photo_max_height;
-				}
-				
-				$new_width = round($image_width / $photo_size_ratio);
-				$new_height = round($image_width / $photo_size_ratio);
-				
-				$my_new_temp_image = imagecreatetruecolor($new_width, $new_height);
-				imagecopyresampled ($my_new_temp_image, $my_temp_image, 0, 0, 0, 0, $new_width, $new_height, $image_width, $image_height);
-				
-				$watermark = imagecreatefrompng($watermark_file);
-				$watermark_width = imagesx ($watermark);
-				$watermark_height = imagesy ($watermark);
-				$watermark_x = $new_width - $watermark_width - 10;
-				$watermark_y = $new_height - $watermark_width - 10;
-				imagecopy ($my_new_temp_image, $watermark, $watermark_x, $watermark_y, 0, 0, $watermark_width, $watermark_height);
-				imagedestroy ($watermark);
-				
-				$photo_upload_notice = save_image($my_new_temp_image, $file_type, $photo_normal_upload_dir .$file_name);
-				imagedestroy ($my_new_temp_image);
-				imagedestroy ($my_temp_image);
-                //kopeerime pildi originaalkujul, originaalnimega vajalikku kataloogi
-                if(move_uploaded_file($_FILES["photo_input"]["tmp_name"], $photo_orig_upload_dir .$file_name)){
-                    $photo_upload_notice = "Originaalfoto laeti üles!";
-                    //$photo_upload_notice = store_person_photo($file_name, $_POST["person_for_photo_input"]);
-                } else {
-                    $photo_upload_notice = "Foto üleslaadimine ei õnnestunud!";
-                }
-            }
-        } else {
-            $photo_error = "Pildifaili pole valitud!";
-        }
         
-        $photo_upload_notice = $photo_error;
-    }
-    
+			
+			if(empty($photo_error)){
+				//teen ajatempli
+				$time_stamp = microtime(1) * 10000;
+				
+				//moodustan failinime, kasutame eesliidet
+				$file_name = $photo_filename_prefix ."_" .$time_stamp ."." .$file_type;
+				
+				if($file_type == "jpg"){
+					$my_temp_image = imagecreatefromjpeg($_FILES["photo_input"]["tmp_name"]);
+				}
+				if($file_type == "png"){
+					$my_temp_image = imagecreatefrompng($_FILES["photo_input"]["tmp_name"]);
+				}
+				if($file_type == "gif"){
+					$my_temp_image = imagecreatefromgif($_FILES["photo_input"]["tmp_name"]);
+				}	  
+				$my_new_temp_image = resize_image($my_temp_image);
+
+				$photo_upload_notice = save_image($my_new_temp_image, $file_type, $photo_normal_upload_dir .$file_name);
+				$photo_upload_notice = save_image_to_db($file_name, $alt_text, $_POST["privacy_input"]);
+				imagedestroy($my_new_temp_image);
+                //kopeerime pildi originaalkujul, originaalnimega vajalikku kataloogi
+				if(move_uploaded_file($_FILES["photo_input"]["tmp_name"], $photo_orig_upload_dir .$file_name)){
+					$photo_upload_notice .= " Originaalfoto laeti üles!";
+				} else {
+					$photo_upload_notice .= " Foto üleslaadimine ei õnnestunud!";
+					}
+			}
+		} else {
+			$photo_error = "Pildifaili pole valitud!";
+		}
+		echo $photo_error;
+		$photo_upload_notice = $photo_error;
+	}
+	
     require("page_header.php");
 ?>
 
