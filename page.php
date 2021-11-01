@@ -3,7 +3,8 @@
     session_start();
     require_once("../../config.php");
     require_once("fnc_user.php");
-$todays_evaluation = null; //$todays_evaluation = "";
+	require_once("fnc_gallery.php");
+	$todays_evaluation = null; //$todays_evaluation = "";
 	$inserted_adjective = null;
 	$adjective_error = null;
 	
@@ -98,6 +99,10 @@ $todays_evaluation = null; //$todays_evaluation = "";
 	<hr>
 	<?php
 		echo $todays_evaluation;
+		
+	?>
+	<?php
+		echo show_latest_public_photo();
 		
 	?>
 	<form method="POST">

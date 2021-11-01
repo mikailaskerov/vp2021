@@ -2,7 +2,6 @@
     //alustame sessiooni
     session_start();
 	require ("fnc_user.php");
-	require ("page_header.php");
     //kas on sisselogitud
     if(!isset($_SESSION["user_id"])){
         header("Location: page.php");
@@ -12,7 +11,7 @@
         session_destroy();
         header("Location: page.php");
     }
-
+	require ("page_header.php");
 ?>
 <!DOCTYPE html>
 <html lang="et">
@@ -33,6 +32,8 @@
 		<li><a href="movie_relations.php">Filmi info sidumine</a></li>
 		<li><a href="list_movie_info.php">Filmi info tabel</a></li>
 		<li><a href="gallery_photo_upload.php">Fotode uleslaadimine</a></li>
+		<li><a href="gallery_public.php">Fotode vaatamine</a></li>
+		<li><a href="gallery_own.php">Minu oma galerii fotod</a></li>
 		<li><a href="user_profile.php">Minu konto</a></li>
 		<li><a href="?logout=1">Logi välja</a></li>
     </ul>
