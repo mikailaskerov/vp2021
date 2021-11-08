@@ -95,15 +95,15 @@
 		return $gallery_html;
     } */
     
-    function read_own_photo_thumbs($page_limit, $page){
+        function read_own_photo_thumbs($page_limit, $page){
         $gallery_html = null;
         $skip = ($page - 1) * $page_limit;
         $conn = new mysqli($GLOBALS["server_host"], $GLOBALS["server_user_name"], $GLOBALS["server_password"], $GLOBALS["database"]);
 		$conn->set_charset("utf8");
-        $stmt = $conn->prepare("SELECT id, filename, alttext FROM vp_photos WHERE userid = ? AND deleted IS NULL ORDER BY id DESC LIMIT ?,?");
+        $stmt = $conn->prepare("SELECT id, filename, created, alttext FROM vp_photos WHERE userid = ? AND deleted IS NULL ORDER BY id DESC LIMIT ?,?");
         echo $conn->error;
         $stmt->bind_param("iii", $_SESSION["user_id"], $skip, $page_limit);
-        $stmt->bind_result($id_from_db, $filename_from_db, $alttext_from_db);
+        $stmt->bind_result($id_from_db, $filename_from_db, $created_from_db, $alttext_from_db);
         $stmt->execute();
         while($stmt->fetch()){
             //<div class="thumbgallery">
@@ -119,6 +119,7 @@
             }
             $gallery_html .= '" class="thumbs">' ."\n";
             $gallery_html .= "</a> \n";
+			$gallery_html .= "<p>Lisatud: " .date_to_est_format($created_from_db) ."</p> \n";
             $gallery_html .= "</div> \n";
         }
         if(empty($gallery_html)){
