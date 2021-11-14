@@ -1,17 +1,17 @@
 <?php
     class Photoupload {
         private $photo_to_upload;
-        public $file_type;
         private $my_temp_image;
         private $my_new_image;
+		private $prefix="vp";
+		public $check_type;
         public $error;
         public $file_name;
-        
+        public $max_size=1024*1024;
         function __construct($photo){
             $this->photo_to_upload = $photo;
             $this->error = null;
-            $this->check_image();
-            //$this->file_type = $type;//hiljem teeb klass selle ise kindlaks
+			$this->check_type = $this->check_image($this->photo_to_upload["size"],$this->max_size);
             if(empty($this->error)){ 
                 $this->my_temp_image = $this->create_image_from_file($this->photo_to_upload["tmp_name"] ,$this->file_type);
             }
@@ -23,7 +23,7 @@
             }
         }
         
-        private function check_image(){
+        public function check_image($img_size, $max_size){
             $image_check = getimagesize($this->photo_to_upload["tmp_name"]);
             if($image_check !== false){
                 if($image_check["mime"] == "image/jpeg"){
@@ -35,10 +35,13 @@
                 if($image_check["mime"] == "image/gif"){
                     $this->file_type = "gif";
                 }
-                //var_dump($image_check);
             } else {
                 $this->error = "Valitud fail ei ole pilt!";
-            }
+				}
+				if ($img_size > $max_size) {
+					$this->error = "Valitud fail on liiga suur!";
+				}
+				
         }
         
         public function check_size($limit){

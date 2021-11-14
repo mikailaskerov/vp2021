@@ -22,7 +22,7 @@
     $normal_photo_max_width = 600;
     $normal_photo_max_height = 400;
 	$thumbnail_width = $thumbnail_height = 100;
-    $watermark_file = "../pics/vp_logo_w100_overlay.png";
+    $watermark_file = "pics/vp_logo_w100_overlay.png";
     
     $file_type = null;
     $file_name = null;
