@@ -1,17 +1,17 @@
-<?php
+    <?php
     class Photoupload {
         private $photo_to_upload;
+        public $file_type;
         private $my_temp_image;
         private $my_new_image;
-		private $prefix="vp";
-		public $check_type;
         public $error;
         public $file_name;
-        public $max_size=1024*1024;
+        
         function __construct($photo){
             $this->photo_to_upload = $photo;
             $this->error = null;
-			$this->check_type = $this->check_image($this->photo_to_upload["size"],$this->max_size);
+            $this->check_image();
+            //$this->file_type = $type;//hiljem teeb klass selle ise kindlaks
             if(empty($this->error)){ 
                 $this->my_temp_image = $this->create_image_from_file($this->photo_to_upload["tmp_name"] ,$this->file_type);
             }
@@ -19,11 +19,12 @@
         
         function __destruct(){
             if(isset($this->my_temp_image)){
-                imagedestroy($this->my_temp_image);
+                @imagedestroy($this->my_temp_image);
             }
         }
         
-        public function check_image($img_size, $max_size){
+        private function check_image(){
+			$error = null;
             $image_check = getimagesize($this->photo_to_upload["tmp_name"]);
             if($image_check !== false){
                 if($image_check["mime"] == "image/jpeg"){
@@ -35,21 +36,37 @@
                 if($image_check["mime"] == "image/gif"){
                     $this->file_type = "gif";
                 }
+                //var_dump($image_check);
             } else {
-                $this->error = "Valitud fail ei ole pilt!";
-				}
-				if ($img_size > $max_size) {
-					$this->error = "Valitud fail on liiga suur!";
-				}
-				
+				$error = "Valitud fail ei ole pilt!";
+                $this->error = $error;
+            }
+			return $error;
         }
         
         public function check_size($limit){
-            if(empty($this->error) and $this->photo_to_upload["size"] > $limit){
-                $this->error .= "Valitud fail on liiga suur!";
+			$error = null;
+            if($this->photo_to_upload["size"] > $limit){
+                $error = "Valitud fail on liiga suur!";
+				$this->error = $error;
             }
             return $this->error;
         }
+		
+		public function check_alowed_type($allowed_types){
+			$error = null;
+			$file_info = getimagesize($this->photo_to_upload["tmp_name"]);
+			if(isset($file_info["mime"])){
+				if(!in_array($file_info["mime"], $allowed_types)){
+					$error = "Valitud foto fail pole lubatud tüüpi!";
+					$this->error = $error;
+				}
+			} else {
+					$error = "Valitud faili tüüpi ei õnnestu kontrollida!";
+					$this->error = $error;
+				}
+			return $error;
+		}
         
         public function create_filename($prefix){
             $time_stamp = microtime(1) * 10000;

@@ -33,6 +33,7 @@
 		<li><a href="list_movie_info.php">Filmi info tabel</a></li>
 		<li><a href="gallery_photo_upload.php">Fotode uleslaadimine</a></li>
 		<li><a href="gallery_public.php">Fotode vaatamine</a></li>
+		<li><a href="gallery_public.php">Sisseloginud kasutajate jaoks avalike fotode galerii</a></li>
 		<li><a href="gallery_own.php">Minu oma galerii fotod</a></li>
 		<li><a href="user_profile.php">Minu konto</a></li>
 		<li><a href="?logout=1">Logi välja</a></li>
