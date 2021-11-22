@@ -1,21 +1,12 @@
 <?php
-    //alustame sessiooni
-    session_start();
-    //kas on sisselogitud
-    if(!isset($_SESSION["user_id"])){
-        header("Location: page.php");
-    }
-    //väljalogimine
-    if(isset($_GET["logout"])){
-        session_destroy();
-        header("Location: page.php");
-    }
-
+	require_once("use_session.php");
+	
 	require_once("../../config.php");
 	require_once("fnc_film.php");
 	require_once("fnc_general.php");
 	
-	$film_store_notice = null;
+    $film_store_notice = null;
+	
 	$title_input = null;
 	$year_input = date("Y");
 	$duration_input = 60;
@@ -28,7 +19,7 @@
 	$genre_input_error = null;
 	$studio_input_error = null;
 	$director_input_error = null;
-
+    
     //kas püütakse salvestada
 	if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		if(isset($_POST["film_submit"])){
@@ -64,30 +55,25 @@
 				$director_input_error = "Palun sisesta filmi lavastaja!";
 			}
 			if(empty($title_input_error) and empty($year_input_error) and empty($duration_input_error) and empty($genre_input_error) and empty($studio_input_error) and empty($director_input_error)){
-
+				
 				$film_store_notice = store_film($title_input, $year_input, $duration_input, $genre_input, $studio_input, $director_input);
 			} else {
 				$film_store_notice = "Osa andmeid on puudu!";
 			}
 		}
 	}
-	
-	 require ("page_header.php");
+    
+    require("page_header.php");
 ?>
-<!DOCTYPE html>
-<html lang="et">
-<head>
-	<meta charset="utf-8">
-	<title><?php echo $_SESSION["first_name"] ." " .$_SESSION["last_name"]; ?>, veebiprogrammeerimine</title>
-</head>
-<body>
+
 	<h1><?php echo $_SESSION["first_name"] ." " .$_SESSION["last_name"]; ?>, veebiprogrammeerimine</h1>
 	<p>See leht on valminud õppetöö raames ja ei sisalda mingisugust tõsiseltvõetavat sisu!</p>
 	<p>Õppetöö toimus <a href="https://www.tlu.ee/dt">Tallinna Ülikooli Digitehnoloogiate instituudis</a>.</p>
 	<hr>
     <ul>
-        <li><a href="home.php">Avaleht</a></li>
-		<li><a href="?logout=1">Logi välja</a></li>
+        <li><a href="?logout=1">Logi välja</a></li>
+		<li><a href="home.php">Avaleht</a></li>
+		<li><a href="list_films.php">Filmide nimekirja vaatamine</a> versioon 1</li>
     </ul>
 	<hr>
     <h2>Eesti filmide lisamine andmebaasi</h2>

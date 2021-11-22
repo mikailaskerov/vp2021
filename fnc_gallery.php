@@ -6,14 +6,16 @@
         $privacy = 3;
         $conn = new mysqli($GLOBALS["server_host"], $GLOBALS["server_user_name"], $GLOBALS["server_password"], $GLOBALS["database"]);
 		$conn->set_charset("utf8");
-        $stmt = $conn->prepare("SELECT filename, alttext FROM vp_photos WHERE id = (SELECT MAX(id) FROM vp_photos WHERE privacy = ? AND deleted IS NULL)");
+        $stmt = $conn->prepare("SELECT id, filename, alttext FROM vp_photos WHERE id = (SELECT MAX(id) FROM vp_photos WHERE privacy = ? AND deleted IS NULL)");
         echo $conn->error;
         $stmt->bind_param("i", $privacy);
-        $stmt->bind_result($filename_from_db, $alttext_from_db);
+        $stmt->bind_result($id_from_db, $filename_from_db, $alttext_from_db);
         $stmt->execute();
         if($stmt->fetch()){
             //<img src="kataloog.file" alt="tekst">
-            $photo_html = '<img src="' .$GLOBALS["photo_normal_upload_dir"] .$filename_from_db .'" alt="';
+            //<img src="show_public_photo.php?photo=44" alt="tekst">
+            //$photo_html = '<img src="' .$GLOBALS["photo_normal_upload_dir"] .$filename_from_db .'" alt="';
+            $photo_html = '<img src="show_public_photo.php?photo=' .$id_from_db .'" alt="';
             if(empty($alttext_from_db)){
                 $photo_html .= "Üleslaetud foto";
             } else {
@@ -36,14 +38,18 @@
         $skip = ($page - 1) * $page_limit;
         $conn = new mysqli($GLOBALS["server_host"], $GLOBALS["server_user_name"], $GLOBALS["server_password"], $GLOBALS["database"]);
 		$conn->set_charset("utf8");
-        $stmt = $conn->prepare("SELECT id, filename, created, alttext FROM vp_photos WHERE privacy >= ? AND deleted IS NULL ORDER BY id DESC LIMIT ?,?");
-        echo $conn->error;
+        //$stmt = $conn->prepare("SELECT id, filename, created, alttext FROM vp_photos WHERE privacy >= ? AND deleted IS NULL ORDER BY id DESC LIMIT ?,?");
+        $stmt = $conn->prepare("SELECT vp_photos.id, filename, alttext, vp_photos.created, firstname, lastname, AVG(rating) as AvgValue FROM vp_photos JOIN vp_users ON vp_photos.userid = vp_users.id LEFT JOIN vp_photoratings ON vp_photoratings.photoid = vp_photos.id WHERE vp_photos.privacy >= ? AND deleted IS NULL GROUP BY vp_photos.id DESC LIMIT ?,?");
+		echo $conn->error;
         $stmt->bind_param("iii", $privacy, $skip, $page_limit);
-        $stmt->bind_result($id_from_db, $filename_from_db, $created_from_db, $alttext_from_db);
+        $stmt->bind_result($id_from_db, $filename_from_db, $alttext_from_db, $created_from_db, $firstname_from_db, $lastname_from_db, $avg_rating_from_db);
         $stmt->execute();
         while($stmt->fetch()){
             //<div class="thumbgallery">
             //<img src="kataloog.file" alt="tekst" class="thumbs" data-id="x" data-fn="see.jpg">
+			//<p>Eesnimi Perekonnanimi<br>
+			//Lisatud: dd.mm.yyyy</p>
+			//<p id="rating44">Hinne: 3,5</p>
             //</div>
             $gallery_html .= '<div class="thumbgallery">' ."\n";
             $gallery_html .= '<img src="' .$GLOBALS["photo_thumbnail_upload_dir"] .$filename_from_db .'" alt="';
@@ -53,7 +59,15 @@
                 $gallery_html .= $alttext_from_db;
             }
             $gallery_html .= '" class="thumbs" data-id="' .$id_from_db .'" data-fn="' .$filename_from_db .'">' ."\n";
-			$gallery_html .= "<p>Lisatud: " .date_to_est_format($created_from_db) ."</p> \n";
+			$gallery_html .= "<p>" .$firstname_from_db ." " .$lastname_from_db ."<br> \n";
+			$gallery_html .= "Lisatud: " .date_to_est_format($created_from_db) ."</p> \n";
+			$gallery_html .= '<p id="rating' .$id_from_db .'">';
+			if(!empty($avg_rating_from_db)){
+				$gallery_html .= "Hinne: " .round($avg_rating_from_db, 2);
+			} else {
+				$gallery_html .= "Pole hinnatud";
+			}
+			$gallery_html .= "</p> \n";
             $gallery_html .= "</div> \n";
         }
         if(empty($gallery_html)){
